@@ -11,22 +11,26 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-      # windows-latest, macos-latest
-        os: [ubuntu-latest]
+        os:
+          - ubuntu-latest
+        ros_distribution:
+          - galactic
       fail-fast: false
     steps:
-    - uses: actions/checkout@master
+    - uses: actions/checkout@v2
+
     - name: Setup ROS 2
       uses: ros-tooling/setup-ros@master
       with:
         use-ros2-testing: true
-        required-ros-distributions: galactic
+        required-ros-distributions: ${{ matrix.ros_distribution }}
 
     - name: Run Tests
       uses: ros-tooling/action-ros-ci@master
+      id: action_ros_ci_step
       with:
         package-name: nodl_to_policy
-        target-ros2-distro: galactic
+        target-ros2-distro: ${{ matrix.ros_distribution }}
         #colcon-mixin-name: coverage-pytest
         colcon-defaults: |
           {
@@ -39,7 +43,7 @@ jobs:
           }
         # Pinning to a specific commit, so changes in colcon-mixin-repository don't break tests
         colcon-mixin-name: coverage-pytest
-        vcs-repo-file-url: ""
+        #vcs-repo-file-url: ""
         colcon-mixin-repository: https://raw.githubusercontent.com/colcon/colcon-mixin-repository/1ddb69bedfd1f04c2f000e95452f7c24a4d6176b/index.yaml
 
     - uses: codecov/codecov-action@master
@@ -47,7 +51,7 @@ jobs:
         file: ros_ws/nodl_to_policy/coverage.xml
         flags: unittests,nodl_to_policy
         name: codecov-nodl_to_policy
-        fail_ci_if_error: true
+        #fail_ci_if_error: true
 
     - name: Upload Logs
       uses: actions/upload-artifact@master
