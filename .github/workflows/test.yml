@@ -1,4 +1,4 @@
-name: nodl_to_policy CI
+name: test nodl
 
 on:
   pull_request:
@@ -7,55 +7,88 @@ on:
       - master
 
 jobs:
-  build-and-test:
+  build-mac-win-ubuntu:
     runs-on: ${{ matrix.os }}
     strategy:
+      fail-fast: false
       matrix:
+        # windows testing is broken, re-add when the following is resolved
+        # https://github.com/ros-tooling/action-ros-ci/issues/79
         os:
           - ubuntu-latest
         ros_distribution:
-          - galactic
-      fail-fast: false
+          - rolling
     steps:
-    - uses: actions/checkout@v2
+      - uses: actions/checkout@v2
 
-    - name: Setup ROS 2
-      uses: ros-tooling/setup-ros@master
-      with:
-        use-ros2-testing: true
-        required-ros-distributions: ${{ matrix.ros_distribution }}
+      - name: Setup ROS2
+        uses: ros-tooling/setup-ros@master
+        with:
+          use-ros2-testing: true
+          required-ros-distributions: ${{ matrix.ros_distribution }}
 
-    - name: Run Tests
-      uses: ros-tooling/action-ros-ci@master
-      id: action_ros_ci_step
-      with:
-        package-name: nodl_to_policy
-        target-ros2-distro: ${{ matrix.ros_distribution }}
-        #colcon-mixin-name: coverage-pytest
-        colcon-defaults: |
-          {
-            "build": {
-              "mixin": ["coverage-pytest"]
-            },
-            "test": {
-              "mixin": ["coverage-pytest"]
-            }
-          }
-        # Pinning to a specific commit, so changes in colcon-mixin-repository don't break tests
-        colcon-mixin-name: coverage-pytest
-        #vcs-repo-file-url: ""
-        colcon-mixin-repository: https://raw.githubusercontent.com/colcon/colcon-mixin-repository/1ddb69bedfd1f04c2f000e95452f7c24a4d6176b/index.yaml
+          #- name: Extra Dependencies
+          #run: |
+          #pip3 install lxml
 
-    - uses: codecov/codecov-action@master
-      with:
-        file: ros_ws/nodl_to_policy/coverage.xml
-        flags: unittests,nodl_to_policy
-        name: codecov-nodl_to_policy
-        #fail_ci_if_error: true
+      - name: Test nodl
+        uses: ros-tooling/action-ros-ci@master
+        id: action_ros_ci_step
+        with:
+          package-name: nodl_to_policy
+          colcon-mixin-name: coverage-pytest
+          colcon-mixin-repository: https://raw.githubusercontent.com/colcon/colcon-mixin-repository/5c45b95018788deff62202aaa831ad4c20ebe2c6/index.yaml
+          target-ros2-distro: ${{ matrix.ros_distribution }}
 
-    - name: Upload Logs
-      uses: actions/upload-artifact@master
-      with:
-        name: colcon-logs
-        path: ros_ws/log
-      if: always()
+      - name: Upload Logs
+        uses: actions/upload-artifact@v1
+        with:
+          name: colcon-logs-macwin
+          path: ${{ steps.action_ros_ci_step.outputs.ros-workspace-directory-name }}/log
+        if: always()
+
+  build-docker:
+    runs-on: ubuntu-latest
+    container:
+      image: osrf/ros2:nightly
+    steps:
+      - name: prep
+        run: |
+          apt-get -qq update
+          apt-get -qq upgrade -y
+          apt-get -qq install -y curl libasio-dev libtinyxml2-dev
+          colcon mixin add default https://raw.githubusercontent.com/colcon/colcon-mixin-repository/5c45b95018788deff62202aaa831ad4c20ebe2c6/index.yaml
+          colcon mixin update default
+          mkdir -p src
+
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          path: src/
+
+      - run: cp src/codecov.yml .
+
+      - name: Rosdep
+        run: DEBIAN_FRONTEND=noninteractive rosdep update && rosdep install --from-paths src --ignore-src --rosdistro rolling -y
+
+      - name: Build
+        run: . /opt/ros/$ROS_DISTRO/setup.sh && colcon build --event-handlers console_cohesion+ --mixin coverage-pytest --packages-select nodl_to_policy --merge-install
+
+      - name: Run Tests
+        id: action_ros_ci_step
+        run: . /opt/ros/$ROS_DISTRO/setup.sh && colcon test --merge-install --mixin coverage-pytest --packages-select nodl_to_policy ros2nodl --return-code-on-test-failure --event-handlers console_cohesion+
+
+      - uses: codecov/codecov-action@v1
+        with:
+          file: build/nodl_to_policy/coverage.xml
+          fail_ci_if_error: true
+          flags: unittests,nodl_to_policy
+          name: codecov-nodl_to_policy
+
+
+      - name: Upload Logs
+        uses: actions/upload-artifact@v1
+        with:
+          name: colcon-logs-linux
+          path: log/
+        if: always()
