@@ -14,13 +14,19 @@ jobs:
         os: [ubuntu-latest, windows-latest, macos-latest]
       fail-fast: false
     steps:
+    - run: echo "$PATH"
+    - run: echo "$GITHUB_PATH"
     - uses: actions/checkout@v2.3.4
+    - run: echo "$PATH"
+    - run: echo "$GITHUB_PATH"
     
     - name: Setup ROS 2
       uses: ros-tooling/setup-ros@0.2.1
       with:
         required-ros-distributions: rolling
 
+    - run: echo "$PATH"
+    - run: echo "$GITHUB_PATH"
     - name: Run Tests
       uses: ros-tooling/action-ros-ci@0.2.2
       with:
