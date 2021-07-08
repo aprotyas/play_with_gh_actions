@@ -1,0 +1,64 @@
+name: test nodl_to_policy
+
+on:
+  pull_request:
+  push:
+    branches:
+      - master
+
+jobs:
+  build-ubuntu:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        # windows testing is broken, re-add when the following is resolved
+        # https://github.com/ros-tooling/action-ros-ci/issues/79
+        os:
+          - ubuntu-latest
+        ros_distribution:
+          - galactic
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Setup ROS2
+        uses: ros-tooling/setup-ros@master
+        with:
+          use-ros2-testing: true
+          required-ros-distributions: ${{ matrix.ros_distribution }}
+
+          #- name: Extra Dependencies
+          #  run: |
+          #    pip3 install lxml
+
+      - name: Test nodl_to_policy
+        uses: ros-tooling/action-ros-ci@master
+        id: action_ros_ci_step
+        with:
+          package-name: nodl_to_policy
+          #colcon-mixin-name: coverage-pytest
+          colcon-defaults: |
+            {
+              "build": {
+                "mixin": ["coverage-pytest"]
+              },
+              "test": {
+                "mixin": ["coverage-pytest"]
+              }
+            }
+          colcon-mixin-repository: https://raw.githubusercontent.com/colcon/colcon-mixin-repository/5c45b95018788deff62202aaa831ad4c20ebe2c6/index.yaml
+          target-ros2-distro: ${{ matrix.ros_distribution }}
+
+      - uses: codecov/codecov-action@v1
+        with:
+          file: build/nodl_to_policy/coverage.xml
+          fail_ci_if_error: true
+          flags: unittests,nodl_to_policy
+          name: codecov-nodl_to_policy
+
+      - name: Upload Logs
+        uses: actions/upload-artifact@v1
+        with:
+          name: colcon-logs-macwin
+          path: ${{ steps.action_ros_ci_step.outputs.ros-workspace-directory-name }}/log
+        if: always()
