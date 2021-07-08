@@ -15,17 +15,17 @@ jobs:
       fail-fast: false
     steps:
     - name: Setup ROS 2
-      uses: ros-tooling/setup-ros@0.0.15
+      uses: ros-tooling/setup-ros@0.2.1
       with:
         required-ros-distributions: eloquent
 
     - name: Run Tests
-      uses: ros-tooling/action-ros-ci@0.0.13
+      uses: ros-tooling/action-ros-ci@0.2.2
       with:
         package-name: example_package
 
     - name: Upload Logs
-      uses: actions/upload-artifact@v1
+      uses: actions/upload-artifact@v2.2.4
       with:
         name: colcon-logs
         path: ros_ws/log
