@@ -17,7 +17,7 @@ jobs:
     - name: Setup ROS 2
       uses: ros-tooling/setup-ros@0.2.1
       with:
-        required-ros-distributions: eloquent
+        required-ros-distributions: rolling
 
     - name: Run Tests
       uses: ros-tooling/action-ros-ci@0.2.2
