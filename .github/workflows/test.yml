@@ -25,7 +25,7 @@ jobs:
       - uses: actions/checkout@v2
 
       - name: Setup ROS2
-        uses: ros-tooling/setup-ros@0.0.26
+        uses: ros-tooling/setup-ros@master
         with:
           use-ros2-testing: true
           required-ros-distributions: ${{ matrix.ros_distribution }}
@@ -35,7 +35,7 @@ jobs:
           pip3 install lxml
 
       - name: Test nodl
-        uses: ros-tooling/action-ros-ci@0.1.0
+        uses: ros-tooling/action-ros-ci@master
         id: action_ros_ci_step
         with:
           package-name: nodl_python ros2nodl
