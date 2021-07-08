@@ -1,3 +1,5 @@
-# Playing with GitHub actions
+# NoDL
 
-Just a sandbox to test out GitHub actions.
+![Test NoDL](https://github.com/ubuntu-robotics/nodl/workflows/test%20nodl/badge.svg?event=push)
+
+CLI and parsing utilities for the ROS 2 NoDL
