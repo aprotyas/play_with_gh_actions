@@ -11,13 +11,15 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-latest, windows-latest, macos-latest]
+      # windows-latest, macos-latest
+        os: [ubuntu-latest]
       fail-fast: false
     steps:
     - uses: actions/checkout@v2.3.4
     - name: Setup ROS 2
       uses: ros-tooling/setup-ros@0.2.1
       with:
+        use-ros2-testing: true
         required-ros-distributions: galactic
 
     - name: Run Tests
@@ -25,23 +27,25 @@ jobs:
       with:
         package-name: nodl_to_policy
         target-ros2-distro: galactic
-        colcon-defaults: |
-          {
-            "build": {
-              "mixin": ["coverage-pytest"]
-            },
-            "test": {
-              "mixin": ["coverage-pytest"]
-            }
-          }
+        colcon-mixin-name: coverage-pytest
+        #colcon-defaults: |
+        #  {
+        #    "build": {
+        #      "mixin": ["coverage-pytest"]
+        #    },
+        #    "test": {
+        #      "mixin": ["coverage-pytest"]
+        #    }
+        #  }
         # Pinning to a specific commit, so changes in colcon-mixin-repository don't break tests
         colcon-mixin-repository: https://raw.githubusercontent.com/colcon/colcon-mixin-repository/1ddb69bedfd1f04c2f000e95452f7c24a4d6176b/index.yaml
 
     - uses: codecov/codecov-action@v1.2.1
       with:
-        file: ros_ws/coveragepy/.coverage
-        flags: unittests
-        name: codecov-umbrella
+        file: build/nodl_to_policy/coverage.xml
+        flags: unittests,nodl_to_policy
+        name: codecov-nodl_to_policy
+        fail_ci_if_error: true
 
     - name: Upload Logs
       uses: actions/upload-artifact@v1
