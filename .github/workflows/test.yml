@@ -20,7 +20,7 @@ jobs:
           - macos-latest
           - ubuntu-latest
         ros_distribution:
-          - rolling
+          - galactic
     steps:
       - uses: actions/checkout@v2
 
@@ -38,7 +38,8 @@ jobs:
         uses: ros-tooling/action-ros-ci@master
         id: action_ros_ci_step
         with:
-          package-name: nodl_python ros2nodl
+          #package-name: nodl_python ros2nodl
+          package-name: nodl_python
           colcon-mixin-name: coverage-pytest
           colcon-mixin-repository: https://raw.githubusercontent.com/colcon/colcon-mixin-repository/5c45b95018788deff62202aaa831ad4c20ebe2c6/index.yaml
           target-ros2-distro: ${{ matrix.ros_distribution }}
