@@ -1,4 +1,4 @@
-name: Test Example
+name: test nodl
 
 on:
   pull_request:
@@ -7,32 +7,78 @@ on:
       - master
 
 jobs:
-  build-and-test:
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        os: [ubuntu-latest, windows-latest, macos-latest]
-      fail-fast: false
+  #  build-mac-win-ubuntu:
+  #    runs-on: ${{ matrix.os }}
+  #    strategy:
+  #      fail-fast: false
+  #      matrix:
+  #        # windows testing is broken, re-add when the following is resolved
+  #        # https://github.com/ros-tooling/action-ros-ci/issues/79
+  #        os:
+  #          - ubuntu-latest
+  #        ros_distribution:
+  #          - rolling
+  #    steps:
+  #      - uses: actions/checkout@v2
+  #
+  #      - name: Setup ROS2
+  #        uses: ros-tooling/setup-ros@master
+  #        with:
+  #          use-ros2-testing: true
+  #          required-ros-distributions: ${{ matrix.ros_distribution }}
+  #
+  #          #- name: Extra Dependencies
+  #          #run: |
+  #          #pip3 install lxml
+  #
+  #      - name: Test nodl
+  #        uses: ros-tooling/action-ros-ci@master
+  #        id: action_ros_ci_step
+  #        with:
+  #          package-name: nodl_to_policy
+  #          colcon-mixin-name: coverage-pytest
+  #          colcon-mixin-repository: https://raw.githubusercontent.com/colcon/colcon-mixin-repository/5c45b95018788deff62202aaa831ad4c20ebe2c6/index.yaml
+  #          target-ros2-distro: ${{ matrix.ros_distribution }}
+  #
+  #      - name: Upload Logs
+  #        uses: actions/upload-artifact@v1
+  #        with:
+  #          name: colcon-logs-macwin
+  #          path: ${{ steps.action_ros_ci_step.outputs.ros-workspace-directory-name }}/log
+  #        if: always()
+
+  build-docker:
+    runs-on: ubuntu-latest
+    container:
+      image: ros:galactic
     steps:
-    - run: echo "$PATH"
-    #- uses: actions/checkout@v2.3.4
-    - run: echo "$PATH"
-    
-    - name: Setup ROS 2
-      uses: ros-tooling/setup-ros@0.2.1
-      with:
-        required-ros-distributions: rolling
+      - name: prep
+        run: |
+          apt-get -qq update
+          apt-get -qq upgrade -y
+          apt-get -qq install -y curl libasio-dev libtinyxml2-dev
+          colcon mixin add default https://raw.githubusercontent.com/colcon/colcon-mixin-repository/5c45b95018788deff62202aaa831ad4c20ebe2c6/index.yaml
+          colcon mixin update default
+          mkdir -p src
 
-    - run: echo "$PATH"
-    - name: Run Tests
-      uses: ros-tooling/action-ros-ci@0.2.2
-      with:
-        package-name: example_package
-        target-ros2-distro: rolling
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          path: src/
 
-    - name: Upload Logs
-      uses: actions/upload-artifact@v2.2.4
-      with:
-        name: colcon-logs
-        path: ros_ws/log
-      if: always()
+      - name: Rosdep
+        run: DEBIAN_FRONTEND=noninteractive rosdep update && rosdep install --from-paths src --ignore-src --rosdistro galactic -y
+
+      - name: Build
+        run: . /opt/ros/$ROS_DISTRO/setup.sh && colcon build --event-handlers console_cohesion+ --mixin coverage-pytest --packages-select example_package --merge-install
+
+      - name: Run Tests
+        id: action_ros_ci_step
+        run: . /opt/ros/$ROS_DISTRO/setup.sh && colcon test --merge-install --mixin coverage-pytest --packages-select example_package --return-code-on-test-failure --event-handlers console_cohesion+
+
+      - name: Upload Logs
+        uses: actions/upload-artifact@v1
+        with:
+          name: colcon-logs-linux
+          path: log/
+        if: always()

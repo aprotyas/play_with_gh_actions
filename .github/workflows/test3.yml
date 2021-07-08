@@ -1,0 +1,38 @@
+name: Test Example
+
+on:
+  pull_request:
+  push:
+    branches:
+      - master
+
+jobs:
+  build-and-test:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+      fail-fast: false
+    steps:
+    - run: echo "$PATH"
+    #- uses: actions/checkout@v2.3.4
+    - run: echo "$PATH"
+    
+    - name: Setup ROS 2
+      uses: ros-tooling/setup-ros@0.2.1
+      with:
+        required-ros-distributions: rolling
+
+    - run: echo "$PATH"
+    - name: Run Tests
+      uses: ros-tooling/action-ros-ci@0.2.2
+      with:
+        package-name: example_package
+        target-ros2-distro: rolling
+
+    - name: Upload Logs
+      uses: actions/upload-artifact@v2.2.4
+      with:
+        name: colcon-logs
+        path: ros_ws/log
+      if: always()
