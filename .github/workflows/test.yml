@@ -23,6 +23,7 @@ jobs:
       uses: ros-tooling/action-ros-ci@0.2.2
       with:
         package-name: example_package
+        target-ros2-distro: rolling
 
     - name: Upload Logs
       uses: actions/upload-artifact@v2.2.4
