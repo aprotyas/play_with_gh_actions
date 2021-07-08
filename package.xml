@@ -4,7 +4,7 @@
   <name>example_package</name>
   <version>0.0.0</version>
   <description>Example package</description>
-  <author email="aprotyas@u.rochester.edu">Abrar Rahman Protyasha</author>
+  <maintainer email="aprotyas@u.rochester.edu">Abrar Rahman Protyasha</author>
   <license>TODO</license>
 
   <exec_depend>rclpy</exec_depend>

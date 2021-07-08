@@ -13,8 +13,8 @@ setup(
     ],
     install_requires=['setuptools'],
     zip_safe=True,
-    author='Abrar Rahman Protyasha',
-    author_email='aprotyas@u.rochester.edu',
+    maintainer='Abrar Rahman Protyasha',
+    maintainer_email='aprotyas@u.rochester.edu',
     keywords=['ROS'],
     classifiers=[
         'Intended Audience :: Developers',
