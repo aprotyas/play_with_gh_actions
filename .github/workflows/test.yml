@@ -15,28 +15,28 @@ jobs:
         os: [ubuntu-latest]
       fail-fast: false
     steps:
-    - uses: actions/checkout@v2.3.4
+    #- uses: actions/checkout@master
     - name: Setup ROS 2
-      uses: ros-tooling/setup-ros@0.2.1
+      uses: ros-tooling/setup-ros@master
       with:
         use-ros2-testing: true
         required-ros-distributions: galactic
 
     - name: Run Tests
-      uses: ros-tooling/action-ros-ci@0.2.2
+      uses: ros-tooling/action-ros-ci@master
       with:
         package-name: nodl_to_policy
         target-ros2-distro: galactic
-        colcon-mixin-name: coverage-pytest
-        #colcon-defaults: |
-        #  {
-        #    "build": {
-        #      "mixin": ["coverage-pytest"]
-        #    },
-        #    "test": {
-        #      "mixin": ["coverage-pytest"]
-        #    }
-        #  }
+        #colcon-mixin-name: coverage-pytest
+        colcon-defaults: |
+          {
+            "build": {
+              "mixin": ["coverage-pytest"]
+            },
+            "test": {
+              "mixin": ["coverage-pytest"]
+            }
+          }
         # Pinning to a specific commit, so changes in colcon-mixin-repository don't break tests
         colcon-mixin-repository: https://raw.githubusercontent.com/colcon/colcon-mixin-repository/1ddb69bedfd1f04c2f000e95452f7c24a4d6176b/index.yaml
 
