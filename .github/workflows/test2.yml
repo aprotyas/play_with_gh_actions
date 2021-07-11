@@ -51,16 +51,15 @@ jobs:
       - run: ls -alh ${{ steps.action_ros_ci_step.outputs.ros-workspace-directory-name }}/src/*/*
       - run: cat ${{ steps.action_ros_ci_step.outputs.ros-workspace-directory-name }}/build/nodl_to_policy/coverage.xml
 
-        #- uses: codecov/codecov-action@v1
-        #  with:
-        #    file: ${{ steps.action_ros_ci_step.outputs.ros-workspace-directory-name }}/build/nodl_to_policy/coverage.xml
-        #    fail_ci_if_error: true
-        #    flags: unittests,nodl_to_policy
-        #    name: codecov-nodl_to_policy
+      - uses: codecov/codecov-action@v1
+        with:
+          files: ${{ steps.action_ros_ci_step.outputs.ros-workspace-directory-name }}/build/nodl_to_policy/coverage.xml
+          fail_ci_if_error: true
+          name: codecov-nodl_to_policy
 
       - name: Upload Logs
-        uses: actions/upload-artifact@v1
+        uses: actions/upload-artifact@v2
         with:
-          name: colcon-logs-macwin
+          name: colcon-logs
           path: ${{ steps.action_ros_ci_step.outputs.ros-workspace-directory-name }}/log
         if: always()
