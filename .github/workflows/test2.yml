@@ -15,7 +15,8 @@ jobs:
         # windows testing is broken, re-add when the following is resolved
         # https://github.com/ros-tooling/action-ros-ci/issues/79
         os:
-          - ubuntu-20.04, macos-latest
+          - ubuntu-20.04
+          - macos-latest
         ros_distribution:
           - galactic
     steps:
