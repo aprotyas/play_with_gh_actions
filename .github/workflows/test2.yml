@@ -1,38 +1,26 @@
-name: test nodl_to_policy
+name: Test nodl_to_policy
 
-on:
-  pull_request:
-  push:
-    branches:
-      - master
+on: [push, pull_request]
 
 jobs:
-  build-ubuntu:
+  build-and-test:
     runs-on: ${{ matrix.os }}
     strategy:
-      fail-fast: false
       matrix:
-        # windows testing is broken, re-add when the following is resolved
-        # https://github.com/ros-tooling/action-ros-ci/issues/79
         os:
           - ubuntu-20.04
-          - macos-latest
         ros_distribution:
           - galactic
     steps:
-      #- uses: actions/checkout@v2
-      #  with:
-      #    path: 'ros_ws/src'
-
       - name: Setup ROS2
-        uses: ros-tooling/setup-ros@master
+        uses: ros-tooling/setup-ros@0.2
         with:
           use-ros2-testing: true
           required-ros-distributions: ${{ matrix.ros_distribution }}
 
       - name: Test nodl_to_policy
-        uses: ros-tooling/action-ros-ci@master
-        id: action_ros_ci_step
+        uses: ros-tooling/action-ros-ci@0.2
+        id: action_ros_ci
         with:
           package-name: nodl_to_policy
           colcon-defaults: |
@@ -44,30 +32,25 @@ jobs:
                 "mixin": ["coverage-pytest"]
               }
             }
-          colcon-mixin-repository: https://raw.githubusercontent.com/colcon/colcon-mixin-repository/5c45b95018788deff62202aaa831ad4c20ebe2c6/index.yaml
+          colcon-mixin-repository: https://raw.githubusercontent.com/colcon/colcon-mixin-repository/1ddb69bedfd1f04c2f000e95452f7c24a4d6176b/index.yaml
           target-ros2-distro: ${{ matrix.ros_distribution }}
-      - run: cat ${{ steps.action_ros_ci_step.outputs.ros-workspace-directory-name }}/package.repo
-      - run: ls -alh ${{ steps.action_ros_ci_step.outputs.ros-workspace-directory-name }}/*
-      - run: ls -alh ${{ steps.action_ros_ci_step.outputs.ros-workspace-directory-name }}/src/*
-      - run: ls -alh ${{ steps.action_ros_ci_step.outputs.ros-workspace-directory-name }}/src/*/*
-      - run: cat ${{ steps.action_ros_ci_step.outputs.ros-workspace-directory-name }}/build/nodl_to_policy/coverage.xml
 
-      - name: Find project
+      # `outputs.root_dir` is set to the relative path of the checked out git repository
+      - name: Find project root
         id: find_project
         run: echo "::set-output name=root_dir::$(vcs diff -s --repos . | cut -d ' ' -f 1)"
 
-      - run: echo "${{ steps.find_project.outputs.root_dir }}"
-
-      - uses: codecov/codecov-action@v1
+      - name: Codecov report
+        uses: codecov/codecov-action@v1
         with:
-          files: ${{ steps.action_ros_ci_step.outputs.ros-workspace-directory-name }}/build/nodl_to_policy/coverage.xml
-          root_dir: ${{ steps.find_project.outputs.root_dir }}
+          files: ${{ steps.action_ros_ci.outputs.ros-workspace-directory-name }}/build/nodl_to_policy/coverage.xml
+          root_dir: ${{ steps.find_project.outputs.root_dir }}  # `codecov.yml` file found here
           fail_ci_if_error: true
           name: codecov-nodl_to_policy
 
       - name: Upload Logs
         uses: actions/upload-artifact@v2
         with:
-          name: colcon-logs
-          path: ${{ steps.action_ros_ci_step.outputs.ros-workspace-directory-name }}/log
+          name: colcon_logs
+          path: ${{ steps.action_ros_ci.outputs.ros-workspace-directory-name }}/log
         if: always()
