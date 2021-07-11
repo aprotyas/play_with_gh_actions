@@ -60,6 +60,7 @@ jobs:
       - uses: codecov/codecov-action@v1
         with:
           files: ${{ steps.action_ros_ci_step.outputs.ros-workspace-directory-name }}/build/nodl_to_policy/coverage.xml
+          root_dir: ${{ steps.find_project.outputs.root_dir }}
           fail_ci_if_error: true
           name: codecov-nodl_to_policy
 
