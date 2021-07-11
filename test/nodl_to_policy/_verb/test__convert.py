@@ -45,9 +45,9 @@ def test_fails_no_nodl_file(mocker, parser, verb):
 
     args = parser.parse_args()
     assert verb.main(args=args)
-
-    args = parser.parse_args([])
-    assert verb.main(args=args)
+#
+#    args = parser.parse_args([])
+#    assert verb.main(args=args)
 
 
 def test_fails_sneaky_dir(mocker, parser, tmp_path, verb):
