@@ -23,6 +23,8 @@ jobs:
       - run: pwd
       - run: echo ${{ github.workspace }}
       - uses: actions/checkout@v2
+        with:
+          path: 'ros_ws/src'
       - run: ls
       - run: pwd
       - run: echo ${{ github.workspace }}
