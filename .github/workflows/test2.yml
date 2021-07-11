@@ -51,6 +51,12 @@ jobs:
       - run: ls -alh ${{ steps.action_ros_ci_step.outputs.ros-workspace-directory-name }}/src/*/*
       - run: cat ${{ steps.action_ros_ci_step.outputs.ros-workspace-directory-name }}/build/nodl_to_policy/coverage.xml
 
+      - name: Find project
+        id: find_project
+        run: echo "::set-output name=root_dir::$(vcs diff -s --repos . | cut -d ' ' -f 1)"
+
+      - run: echo "${{ steps.find_project.outputs.root_dir }}"
+
       - uses: codecov/codecov-action@v1
         with:
           files: ${{ steps.action_ros_ci_step.outputs.ros-workspace-directory-name }}/build/nodl_to_policy/coverage.xml
