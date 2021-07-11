@@ -45,9 +45,9 @@ jobs:
             }
           colcon-mixin-repository: https://raw.githubusercontent.com/colcon/colcon-mixin-repository/5c45b95018788deff62202aaa831ad4c20ebe2c6/index.yaml
           target-ros2-distro: ${{ matrix.ros_distribution }}
-      - run: ls -alh ${{ steps.action_ros_ci_step.outputs.ros-workspace-directory-name }}
-      - run: ls -alh ${{ steps.action_ros_ci_step.outputs.ros-workspace-directory-name }}/src
-      - run: ls -alh ${{ steps.action_ros_ci_step.outputs.ros-workspace-directory-name }}/src/nodl_to_policy
+      - run: cat ${{ steps.action_ros_ci_step.outputs.ros-workspace-directory-name }}/package.repo
+      - run: ls -alh ${{ steps.action_ros_ci_step.outputs.ros-workspace-directory-name }}/*
+      - run: ls -alh ${{ steps.action_ros_ci_step.outputs.ros-workspace-directory-name }}/src/*
 
         #- uses: codecov/codecov-action@v1
         #  with:
