@@ -49,6 +49,7 @@ jobs:
       - run: ls -alh ${{ steps.action_ros_ci_step.outputs.ros-workspace-directory-name }}/*
       - run: ls -alh ${{ steps.action_ros_ci_step.outputs.ros-workspace-directory-name }}/src/*
       - run: ls -alh ${{ steps.action_ros_ci_step.outputs.ros-workspace-directory-name }}/src/*/*
+      - run: cat ${{ steps.action_ros_ci_step.outputs.ros-workspace-directory-name }}/build/nodl_to_policy/coverage.xml
 
         #- uses: codecov/codecov-action@v1
         #  with:
