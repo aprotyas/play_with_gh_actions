@@ -12,6 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import argparse
+
 import nodl_to_policy._command._nodl_to_policy
 import pytest
 
@@ -22,7 +24,11 @@ def command():
 
 
 def test_add_arguments_sets_subparser(mocker, command):
-    pass
+    mocker.patch('nodl_to_policy._command._nodl_to_policy.add_subparsers_on_demand')
+    parser = mocker.MagicMock(spec=argparse.ArgumentParser)
+
+    command.add_arguments(parser, '')
+    assert command._subparser == parser
 
 
 def test_main(mocker, command):

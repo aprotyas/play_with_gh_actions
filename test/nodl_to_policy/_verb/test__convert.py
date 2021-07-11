@@ -39,10 +39,14 @@ def test_accepts_valid_nodl_path(mocker, parser, test_nodl_path, verb):
     assert not verb.main(args=args)
 
 
-def test_fails_no_nodl_file(mocker, parser, tmp_path, verb):
-    mocker.patch('nodl_to_policy._verb._convert.pathlib.Path.cwd', return_value=tmp_path)
-
+def test_fails_no_nodl_file(mocker, parser, verb):
     args = parser.parse_args([''])
+    assert verb.main(args=args)
+
+    args = parser.parse_args()
+    assert verb.main(args=args)
+
+    args = parser.parse_args([])
     assert verb.main(args=args)
 
 

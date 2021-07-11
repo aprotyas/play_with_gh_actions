@@ -41,10 +41,6 @@ class _ConvertVerb(VerbExtension):
     def main(self, *, args: argparse.Namespace) -> int:
         """High level logic employed by the `convert` verb."""
         nodl_file_path = args.nodl_file
-        if not nodl_file_path:
-            print('No files to validate', file=sys.stderr)
-            return 1
-
         if not nodl_file_path.is_file():
             print(f'{nodl_file_path} is not a file')
             return 1
