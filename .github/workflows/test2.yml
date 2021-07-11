@@ -29,9 +29,6 @@ jobs:
           package-name: nodl_to_policy
           colcon-defaults: |
             {
-              "build": {
-                "mixin": ["coverage-pytest"]
-              },
               "test": {
                 "mixin": ["coverage-pytest"]
               }
