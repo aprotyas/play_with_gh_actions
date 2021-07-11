@@ -13,13 +13,13 @@ jobs:
           - galactic
     steps:
       - name: Setup ROS2
-        uses: ros-tooling/setup-ros@0.2
+        uses: ros-tooling/setup-ros@v0.2
         with:
           use-ros2-testing: true
           required-ros-distributions: ${{ matrix.ros_distribution }}
 
       - name: Test nodl_to_policy
-        uses: ros-tooling/action-ros-ci@0.2
+        uses: ros-tooling/action-ros-ci@v0.2
         id: action_ros_ci
         with:
           package-name: nodl_to_policy
