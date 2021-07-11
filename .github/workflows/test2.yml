@@ -19,7 +19,13 @@ jobs:
         ros_distribution:
           - galactic
     steps:
+      - run: ls
+      - run: pwd
+      - run: echo ${{ github.workspace }}
       - uses: actions/checkout@v2
+      - run: ls
+      - run: pwd
+      - run: echo ${{ github.workspace }}
 
       - name: Setup ROS2
         uses: ros-tooling/setup-ros@master
@@ -31,12 +37,14 @@ jobs:
           #  run: |
           #    pip3 install lxml
 
+      - run: ls
+      - run: pwd
+      - run: echo ${{ github.workspace }}
       - name: Test nodl_to_policy
         uses: ros-tooling/action-ros-ci@master
         id: action_ros_ci_step
         with:
           package-name: nodl_to_policy
-          #colcon-mixin-name: coverage-pytest
           colcon-defaults: |
             {
               "build": {
@@ -49,13 +57,16 @@ jobs:
           colcon-mixin-repository: https://raw.githubusercontent.com/colcon/colcon-mixin-repository/5c45b95018788deff62202aaa831ad4c20ebe2c6/index.yaml
           target-ros2-distro: ${{ matrix.ros_distribution }}
 
-      - uses: codecov/codecov-action@v1
-        with:
-          file: build/nodl_to_policy/coverage.xml
-          fail_ci_if_error: true
-          flags: unittests,nodl_to_policy
-          name: codecov-nodl_to_policy
+          # - uses: codecov/codecov-action@v1
+          #   with:
+          #     file: build/nodl_to_policy/coverage.xml
+          #     fail_ci_if_error: true
+          #     flags: unittests,nodl_to_policy
+          #     name: codecov-nodl_to_policy
 
+      - run: ls
+      - run: pwd
+      - run: echo ${{ github.workspace }}
       - name: Upload Logs
         uses: actions/upload-artifact@v1
         with:
