@@ -3,7 +3,7 @@
 <package format="3">
   <name>example_package</name>
   <version>0.0.0</version>
-  <description>Example package</description>
+  <description>Example package.</description>
   <maintainer email="aprotyas@u.rochester.edu">Abrar Rahman Protyasha</maintainer>
   <license>TODO</license>
 
