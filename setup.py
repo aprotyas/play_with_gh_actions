@@ -15,7 +15,7 @@ setup(
     zip_safe=True,
     maintainer='Abrar Rahman Protyasha',
     maintainer_email='aprotyas@u.rochester.edu',
-    keywords=['ROS', 'Python3'],
+    keywords=['ROS', 'Python'],
     classifiers=[
         'Intended Audience :: Developers',
         'Programming Language :: Python',
